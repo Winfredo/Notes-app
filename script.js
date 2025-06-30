@@ -1,5 +1,2 @@
-let buttonElement = document.querySelector('.button-element')
-
-buttonElement.addEventListener('click', () => {
-    console.log('button clicked')
-})
+const addBox = document.querySelector('.add-box');
+const popupBox = document.querySelector('.popup-box')
