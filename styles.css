@@ -112,7 +112,7 @@ body {
   transform-origin: bottom right;
 }
 
-.settings:hover .menu {
+.settings.show .menu {
   transform: scale(1);
 }
 

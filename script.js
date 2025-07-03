@@ -1,10 +1,13 @@
 const addBox = document.querySelector(".add-box");
 const popupBox = document.querySelector(".popup-box");
+const popupTitle = document.querySelector("header p");
+const popupBtn = document.querySelector("form button");
 const closeIcon = document.querySelector("header i");
 const addBtn = document.querySelector(".add-btn");
 const titleTag = document.querySelector("input");
 const descTag = document.querySelector("textarea");
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
+let isUpdated = false, updatedId;
 const containerEl = document.querySelector(".mini-container");
 const months = [
   "January",
@@ -31,8 +34,8 @@ const days = [
 ];
 
 let showNotes = () => {
-    document.querySelectorAll('.note').forEach(note => note.remove());
-  notes.forEach((note) => {
+  document.querySelectorAll(".note").forEach((note) => note.remove());
+  notes.forEach((note, index) => {
     let liTag = ` <li class="note">
           <div class="details">
             <p>${note.title}</p>
@@ -43,12 +46,12 @@ let showNotes = () => {
           <div class="bottom-content">
             <span class="date">${note.date}</span>
             <div class="settings">
-              <i class="fa-solid fa-ellipsis"></i>
+              <i onclick="showMenu(this)" class="fa-solid fa-ellipsis"></i>
               <ul class="menu">
-                <li class="edit">
+                <li onclick="updateNote(${index}, '${note.title}', '${note.description}')" class="edit">
                   <i class="fa-solid fa-pen-to-square"></i>Edit
-                </li>
-                <li class="delete"><i class="fa-solid fa-trash"></i>Delete</li>
+                </li> 
+                <li onclick="deleteNote(${index})" class="delete"><i class="fa-solid fa-trash"></i>Delete</li>
               </ul>
             </div>
           </div>
@@ -58,15 +61,46 @@ let showNotes = () => {
 };
 showNotes();
 
+let showMenu = (elem) => {
+  elem.parentElement.classList.add("show");
+  document.addEventListener("click", (e) => {
+    if (e.target.tagName != "I" || e.target != elem) {
+      elem.parentElement.classList.remove("show");
+    }
+  });
+};
+
 addBox.addEventListener("click", () => {
+    titleTag.focus();
   popupBox.classList.add("show");
 });
 
 closeIcon.addEventListener("click", () => {
-    titleTag.value = '';
-    descTag.value = '';
+    isUpdated = false;
+  titleTag.value = "";
+  descTag.value = "";
+  popupTitle.innerText = "Add a Note";
+  popupBtn.innerText = "Add a New Note";
   popupBox.classList.remove("show");
 });
+
+let deleteNote = (noteId) => {
+    let confirmDelete = confirm("Are you sure you want to delete this note?");
+    if (!confirmDelete) return;
+  notes.splice(noteId, 1);
+  localStorage.setItem("notes", JSON.stringify(notes));
+  showNotes();
+};
+
+let updateNote = (noteId, title, description) => {
+    isUpdated = true;
+    updatedId = noteId;
+  addBox.click();
+  titleTag.value = title;
+  descTag.value = description;
+  popupTitle.innerText = "Update Note";
+  popupBtn.innerText = "Update Note";
+};
 
 addBtn.addEventListener("click", (e) => {
   e.preventDefault();
@@ -85,11 +119,17 @@ addBtn.addEventListener("click", (e) => {
       description: notedesc,
       date: `${dayEl} ${monthEl} ${date}, ${yearEl}`,
     };
-    notes.push(noteInfo);
+
+    if (!isUpdated){
+        notes.push(noteInfo);
+    }else {
+        isUpdated = false;
+        notes[updatedId] = noteInfo; 
+    }
     localStorage.setItem("notes", JSON.stringify(notes));
     closeIcon.click();
     showNotes();
-    titleTag.value = '';
-    descTag.value = '';
+    titleTag.value = "";
+    descTag.value = "";
   }
 });
