@@ -4,8 +4,8 @@ const closeIcon = document.querySelector("header i");
 const addBtn = document.querySelector(".add-btn");
 const titleTag = document.querySelector("input");
 const descTag = document.querySelector("textarea");
-const notes = JSON.parse(localStorage.getItem("notes") || "[]");
-const containerEl = document.querySelector(".container");
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+const containerEl = document.querySelector(".mini-container");
 const months = [
   "January",
   "February",
@@ -29,36 +29,42 @@ const days = [
   "Friday",
   "Saturday",
 ];
-let showNotes = () => {
-    notes.forEach(note => {
-        containerEl.innerHTML += `<li class="note">
-        <div class="details">
-          <p>${note.title}</p>
-          <span class=""
-            >${note.description}</span
-          >
-        </div>
 
-        <div class="bottom-content">
-          <span class="date">${note.date}</span>
-          <div class="settings">
-            <i class="fa-solid fa-ellipsis"></i>
-            <ul class="menu">
-              <li class="edit">
-                <i class="fa-solid fa-pen-to-square"></i>Edit
-              </li>
-              <li class="delete"><i class="fa-solid fa-trash"></i>Delete</li>
-            </ul>
+let showNotes = () => {
+    document.querySelectorAll('.note').forEach(note => note.remove());
+  notes.forEach((note) => {
+    let liTag = ` <li class="note">
+          <div class="details">
+            <p>${note.title}</p>
+            <span class=""
+              >${note.description}</span
+            >
           </div>
-        </div>
-      </li>`
-    })
-}
+          <div class="bottom-content">
+            <span class="date">${note.date}</span>
+            <div class="settings">
+              <i class="fa-solid fa-ellipsis"></i>
+              <ul class="menu">
+                <li class="edit">
+                  <i class="fa-solid fa-pen-to-square"></i>Edit
+                </li>
+                <li class="delete"><i class="fa-solid fa-trash"></i>Delete</li>
+              </ul>
+            </div>
+          </div>
+        </li>`;
+    addBox.insertAdjacentHTML("afterend", liTag);
+  });
+};
+showNotes();
+
 addBox.addEventListener("click", () => {
   popupBox.classList.add("show");
 });
 
 closeIcon.addEventListener("click", () => {
+    titleTag.value = '';
+    descTag.value = '';
   popupBox.classList.remove("show");
 });
 
@@ -81,10 +87,9 @@ addBtn.addEventListener("click", (e) => {
     };
     notes.push(noteInfo);
     localStorage.setItem("notes", JSON.stringify(notes));
-    console.log(notes);
     closeIcon.click();
     showNotes();
+    titleTag.value = '';
+    descTag.value = '';
   }
-
-
 });
